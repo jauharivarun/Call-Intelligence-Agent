@@ -1,0 +1,146 @@
+{
+  "info": {
+    "name": "Call Intelligence",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8000" },
+    { "key": "token", "value": "" },
+    { "key": "callId", "value": "" },
+    { "key": "reviewId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Phase 0 Health",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/health/"
+      }
+    },
+    {
+      "name": "Phase 1 Obtain Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const data = pm.response.json();",
+              "if (data.token) pm.collectionVariables.set('token', data.token);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin1234\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/token/"
+      }
+    },
+    {
+      "name": "Phase 1 Me",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+        "url": "{{baseUrl}}/api/auth/me/"
+      }
+    },
+    {
+      "name": "Phase 3 List Calls",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+        "url": "{{baseUrl}}/api/calls/"
+      }
+    },
+    {
+      "name": "Phase 3 Upload Call",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const data = pm.response.json();",
+              "if (data.id) pm.collectionVariables.set('callId', data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "title", "value": "Debt collection demo", "type": "text" },
+            { "key": "domain", "value": "debt_collection", "type": "text" },
+            { "key": "call_date", "value": "2026-07-01", "type": "text" },
+            { "key": "recording", "type": "file", "src": [] }
+          ]
+        },
+        "url": "{{baseUrl}}/api/calls/"
+      }
+    },
+    {
+      "name": "Phase 5 Transcript",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+        "url": "{{baseUrl}}/api/calls/{{callId}}/transcript/"
+      }
+    },
+    {
+      "name": "Phase 11 Analysis",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+        "url": "{{baseUrl}}/api/calls/{{callId}}/analysis/"
+      }
+    },
+    {
+      "name": "Phase 10 Reviews",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const data = pm.response.json();",
+              "if (Array.isArray(data) && data[0]) pm.collectionVariables.set('reviewId', data[0].id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+        "url": "{{baseUrl}}/api/reviews/?status=OPEN"
+      }
+    },
+    {
+      "name": "Phase 10 Review Decision",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Token {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"decision\": \"APPROVED\",\n  \"note\": \"Confirmed from evidence\"\n}"
+        },
+        "url": "{{baseUrl}}/api/reviews/{{reviewId}}/decision/"
+      }
+    },
+    {
+      "name": "Phase 12 Search",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+        "url": "{{baseUrl}}/api/search/transcripts/?q=attorney"
+      }
+    }
+  ]
+}
