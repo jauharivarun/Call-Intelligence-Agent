@@ -4,8 +4,8 @@ import { useAuth } from '../auth'
 
 export default function LoginPage() {
   const { user, login } = useAuth()
-  const [username, setUsername] = useState('admin')
-  const [password, setPassword] = useState('admin1234')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -57,9 +57,6 @@ export default function LoginPage() {
         <button className="btn" disabled={busy}>
           {busy ? 'Signing in…' : 'Sign in'}
         </button>
-        <p className="muted" style={{ marginTop: '1rem', marginBottom: 0 }}>
-          Admin: admin / admin1234 · Viewer: viewer / viewer1234
-        </p>
       </form>
     </div>
   )

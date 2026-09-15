@@ -1,4 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000'
+// Empty string = same-origin (Nginx proxies /api). Use ?? so "" does not fall back.
+const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8000'
 
 export type User = {
   id: number

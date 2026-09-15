@@ -8,8 +8,6 @@ class Command(BaseCommand):
     help = "Create or update demo admin and viewer users with auth tokens."
 
     def handle(self, *args, **options):
-        User = get_user_model()
-
         admin = self._upsert_user(
             username=settings.DEMO_USERNAME,
             password=settings.DEMO_PASSWORD,
@@ -17,26 +15,27 @@ class Command(BaseCommand):
             is_staff=True,
         )
         viewer = self._upsert_user(
-            username="viewer",
-            password="viewer1234",
-            email="viewer@example.com",
+            username=settings.DEMO_VIEWER_USERNAME,
+            password=settings.DEMO_VIEWER_PASSWORD,
+            email=settings.DEMO_VIEWER_EMAIL,
             is_staff=False,
         )
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Admin '{admin.username}' / {settings.DEMO_PASSWORD} "
-                f"(role=admin). Token: {Token.objects.get(user=admin).key}"
+                f"Admin '{admin.username}' (role=admin). "
+                f"Token: {Token.objects.get(user=admin).key}"
             )
         )
         self.stdout.write(
             self.style.SUCCESS(
-                f"Viewer '{viewer.username}' / viewer1234 "
-                f"(role=viewer). Token: {Token.objects.get(user=viewer).key}"
+                f"Viewer '{viewer.username}' (role=viewer). "
+                f"Token: {Token.objects.get(user=viewer).key}"
             )
         )
 
         # Retire legacy demo username if present.
+        User = get_user_model()
         legacy = User.objects.filter(username="demo").first()
         if legacy and legacy.username != settings.DEMO_USERNAME:
             legacy.is_active = False

@@ -1,0 +1,16 @@
+.git
+.cursor
+agent-tools
+**/node_modules
+frontend/dist
+backend/.venv
+backend/media
+backend/staticfiles
+**/.pytest_cache
+**/.ruff_cache
+.env
+.env.prod
+Implementation Docs
+postman
+*.md
+!DEPLOY.md

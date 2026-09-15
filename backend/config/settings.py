@@ -17,8 +17,15 @@ environ.Env.read_env(BASE_DIR / ".env")
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="dev-insecure-change-me")
 DEBUG = env("DJANGO_DEBUG")
 ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS")
-if "testserver" not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS = [*ALLOWED_HOSTS, "testserver"]
+# Always allow loopback so container healthchecks (curl 127.0.0.1) succeed.
+for host in ("localhost", "127.0.0.1", "testserver"):
+    if host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS = [*ALLOWED_HOSTS, host]
+
+# Trust proxy headers when Nginx / Cloudflare terminates TLS in front of Gunicorn.
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    USE_X_FORWARDED_HOST = True
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -150,6 +157,9 @@ ALLOWED_AUDIO_CONTENT_TYPES = {
 DEMO_USERNAME = env("DEMO_USERNAME", default="admin")
 DEMO_PASSWORD = env("DEMO_PASSWORD", default="admin1234")
 DEMO_EMAIL = env("DEMO_EMAIL", default="admin@example.com")
+DEMO_VIEWER_USERNAME = env("DEMO_VIEWER_USERNAME", default="viewer")
+DEMO_VIEWER_PASSWORD = env("DEMO_VIEWER_PASSWORD", default="viewer1234")
+DEMO_VIEWER_EMAIL = env("DEMO_VIEWER_EMAIL", default="viewer@example.com")
 
 LOGGING = {
     "version": 1,

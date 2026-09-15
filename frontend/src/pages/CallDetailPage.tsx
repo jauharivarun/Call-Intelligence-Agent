@@ -289,12 +289,13 @@ export default function CallDetailPage() {
 
             <div className="panel">
               <h2 style={{ marginTop: 0 }}>Blockers</h2>
+              {analysis.blockers.length === 0 && <p className="muted">None</p>}
               {analysis.blockers.map((item) => (
                 <div className="item-card" key={item.id}>
                   <h3>{item.text}</h3>
                   {item.impact && <p className="muted">{item.impact}</p>}
                   <button className="evidence-link" onClick={() => showEvidence(item.evidence)}>
-                    Evidence →
+                    Evidence · Lines {item.evidence.map((e) => e.line_number).join(', ') || '—'} →
                   </button>
                 </div>
               ))}
@@ -302,6 +303,9 @@ export default function CallDetailPage() {
 
             <div className="panel">
               <h2 style={{ marginTop: 0 }}>Compliance</h2>
+              {analysis.compliance_observations.length === 0 && (
+                <p className="muted">No compliance observations.</p>
+              )}
               {analysis.compliance_observations.map((item) => (
                 <div className="item-card" key={item.id}>
                   <div className="meta-row">
@@ -310,7 +314,7 @@ export default function CallDetailPage() {
                   </div>
                   <p>{item.observation}</p>
                   <button className="evidence-link" onClick={() => showEvidence(item.evidence)}>
-                    Evidence →
+                    Evidence · Lines {item.evidence.map((e) => e.line_number).join(', ') || '—'} →
                   </button>
                 </div>
               ))}

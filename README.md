@@ -52,6 +52,8 @@ python manage.py runserver 8000
 Demo user: `admin` / `admin1234` (admin — can delete analysis)  
 Viewer user: `viewer` / `viewer1234` (can upload + view all; cannot delete/reanalyze)
 
+Passwords come from `.env` (`DEMO_PASSWORD`, `DEMO_VIEWER_PASSWORD`). On deploy, set both in `.env.prod` and run `seed_demo`.
+
 ### 3. Frontend
 
 ```bash
@@ -86,6 +88,10 @@ Base URL: `http://127.0.0.1:8000`
 9. **Search** — `GET /api/search/transcripts/?q=attorney`
 
 Import [`postman/Call_Intelligence.postman_collection.json`](postman/Call_Intelligence.postman_collection.json).
+
+## Deploy (EC2 + Nginx)
+
+For a project/demo deploy on a single EC2 (Docker Compose: Nginx, Gunicorn, Celery, Postgres, Redis), see **[DEPLOY.md](DEPLOY.md)**.
 
 ## Tests
 
